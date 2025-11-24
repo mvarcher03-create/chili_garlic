@@ -1,0 +1,51 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Customers · Chili Garlic House{% endblock %}
+
+{% block header_title %}Customers{% endblock %}
+
+{% block content %}
+	<section style="display:flex; flex-direction:column; gap:0.75rem;">
+		<div style="display:flex; justify-content:space-between; align-items:flex-end; gap:0.75rem; flex-wrap:wrap;">
+			<div>
+				<h1 style="font-size:1rem; margin-bottom:0.1rem;">All customers</h1>
+				<p style="font-size:0.8rem; color:#6b7280; margin:0;">Live list of registered non-admin users.</p>
+			</div>
+		</div>
+
+		<div class="card-surface" style="padding:0.8rem 0.9rem; overflow-x:auto;">
+			<table class="table-basic">
+				<thead>
+					<tr>
+						<th>Username</th>
+						<th>Email</th>
+						<th>Joined</th>
+						<th>Orders</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for user in customers %}
+						<tr>
+							<td>{{ user.username }}</td>
+							<td>{{ user.email|default:'—' }}</td>
+							<td style="font-size:0.8rem; color:#6b7280;">{{ user.date_joined|date:'Y-m-d H:i' }}</td>
+							<td>{{ user.order_count }}</td>
+							<td>
+								{% if user.is_active %}
+									<span class="badge-pill-yellow">Active</span>
+								{% else %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb;">Inactive</span>
+								{% endif %}
+							</td>
+						</tr>
+					{% empty %}
+						<tr>
+							<td colspan="5" style="font-size:0.8rem; color:#6b7280; padding-top:0.4rem;">No customers yet.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}

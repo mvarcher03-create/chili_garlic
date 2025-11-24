@@ -1,0 +1,65 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}My cart · My Chili Garlic{% endblock %}
+
+{% block header_title %}My cart{% endblock %}
+
+{% block content %}
+	<section style="display:flex; flex-direction:column; gap:0.75rem;">
+		<div>
+			<h1 style="font-size:1.1rem; margin-bottom:0.2rem;">My cart</h1>
+			<p style="font-size:0.85rem; color:#6b7280; margin:0;">Review your items before placing your order.</p>
+		</div>
+
+		<div class="card-surface" style="padding:0.8rem 0.9rem; overflow-x:auto;">
+			{% if items %}
+				<table class="table-basic">
+					<thead>
+						<tr>
+							<th>Item</th>
+							<th>Price</th>
+							<th>Qty</th>
+							<th>Line total</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for row in items %}
+							<tr>
+								<td>
+									{{ row.product.name }}
+									{% if row.addons %}
+										<div style="font-size:0.8rem; color:#6b7280; margin-top:0.1rem;">Add-ons: {{ row.addons }}</div>
+									{% endif %}
+								</td>
+								<td>₱{{ row.product.price }}</td>
+								<td>
+									<form method="post" action="{% url 'customer_cart_update' row.product.id %}" style="display:inline; margin-right:0.15rem;">
+										{% csrf_token %}
+										<input type="hidden" name="op" value="dec" />
+										<button type="submit" style="border:1px solid #d1d5db; background:#f9fafb; border-radius:999px; width:24px; height:24px; font-size:0.8rem; cursor:pointer;">−</button>
+									</form>
+									<span style="display:inline-block; min-width:24px; text-align:center; font-size:0.9rem;">{{ row.quantity }}</span>
+									<form method="post" action="{% url 'customer_cart_update' row.product.id %}" style="display:inline; margin-left:0.15rem;">
+										{% csrf_token %}
+										<input type="hidden" name="op" value="inc" />
+										<button type="submit" style="border:1px solid #d1d5db; background:#f9fafb; border-radius:999px; width:24px; height:24px; font-size:0.8rem; cursor:pointer;">+</button>
+									</form>
+								</td>
+								<td>₱{{ row.line_total }}</td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td colspan="3" style="text-align:right; font-weight:600;">Total</td>
+							<td>₱{{ total }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+					<a href="{% url 'customer_checkout' %}" class="btn btn-primary" style="font-size:0.85rem; padding:0.4rem 0.95rem; text-decoration:none;">Checkout</a>
+				</div>
+			{% else %}
+				<p style="font-size:0.85rem; color:#6b7280;">Your cart is empty. Start by adding items from the <a href="{% url 'customer_order_now' %}" style="color:#b91c1c; text-decoration:none; border-bottom:1px dashed rgba(248,113,113,0.7);">Order now</a> page.</p>
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}Checkout · My Chili Garlic{% endblock %}
+
+{% block header_title %}Checkout{% endblock %}
+
+{% block content %}
+	<section style="display:flex; flex-direction:column; gap:1rem;">
+		<div>
+			<h1 style="font-size:1.1rem; margin-bottom:0.2rem;">Checkout</h1>
+			<p style="font-size:0.85rem; color:#6b7280; margin:0;">Review your order, confirm pickup details, and payment.</p>
+		</div>
+
+		<div class="card-surface" style="padding:0.9rem 1rem; display:grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr); gap:1rem; align-items:flex-start;">
+			<div>
+				<h2 style="font-size:0.95rem; margin-bottom:0.5rem;">Order summary</h2>
+				<table class="table-basic" style="font-size:0.85rem;">
+					<thead>
+						<tr>
+							<th>Item</th>
+							<th>Price</th>
+							<th>Qty</th>
+							<th>Line total</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for row in items %}
+							<tr>
+								<td>
+									{{ row.product.name }}
+									{% if row.addons %}
+										<div style="font-size:0.75rem; color:#6b7280; margin-top:0.1rem;">Add-ons: {{ row.addons }}</div>
+									{% endif %}
+								</td>
+								<td>₱{{ row.product.price }}</td>
+								<td>{{ row.quantity }}</td>
+								<td>₱{{ row.line_total }}</td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td colspan="3" style="text-align:right; font-weight:600;">Total</td>
+							<td>₱{{ total }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="margin-top:0.5rem; font-size:0.8rem; color:#6b7280;">Logged in as <strong>{{ request.user.username }}</strong>.</p>
+			</div>
+
+			<div>
+				<form method="post" action="{% url 'customer_checkout' %}" style="display:flex; flex-direction:column; gap:0.9rem;">
+					{% csrf_token %}
+
+					<div>
+						<h2 style="font-size:0.95rem; margin-bottom:0.35rem;">Fulfillment</h2>
+						<p style="font-size:0.85rem; margin:0 0 0.3rem 0;"><strong>Pick-up only</strong></p>
+						<p style="font-size:0.85rem; color:#6b7280; margin:0;">Pickup address:</p>
+						<p style="font-size:0.9rem; color:#111827; margin:0.1rem 0 0;">{{ pickup_address }}</p>
+					</div>
+
+					<div>
+						<h2 style="font-size:0.95rem; margin-bottom:0.35rem;">Payment</h2>
+						<div style="font-size:0.85rem;">
+							<label style="display:flex; align-items:center; gap:0.45rem; cursor:pointer;">
+								<input type="radio" name="payment_method" value="cash" checked />
+								<span><strong>Over the counter / Cash</strong></span>
+							</label>
+							<p style="margin-top:0.25rem; color:#6b7280;">Pay in cash when you pick up your order.</p>
+						</div>
+					</div>
+
+					<div style="display:flex; justify-content:space-between; gap:0.75rem; margin-top:0.5rem;">
+						<a href="{% url 'customer_cart' %}" class="btn btn-secondary" style="font-size:0.85rem; padding:0.4rem 0.9rem; text-decoration:none; text-align:center;">Back to cart</a>
+						<button type="submit" class="btn btn-primary" style="font-size:0.85rem; padding:0.4rem 0.95rem;">Confirm order</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+{% endblock %}

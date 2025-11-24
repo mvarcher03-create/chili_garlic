@@ -1,0 +1,89 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Admin dashboard · Chili Garlic House{% endblock %}
+
+{% block header_title %}Overview{% endblock %}
+
+{% block content %}
+	<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:0.9rem; margin-bottom:1.05rem;">
+		<div style="background:#fee2e2; border-radius:0.9rem; padding:0.85rem 0.95rem; border:1px solid #fecaca;">
+			<div style="font-size:1rem; opacity:0.9;">Today orders</div>
+			<div style="font-size:1.8rem; font-weight:700;">{{ today_orders_count }}</div>
+			<div style="font-size:1rem; opacity:0.85;">Orders placed since midnight</div>
+		</div>
+		<div style="background:#ffffff; border-radius:0.9rem; padding:0.85rem 0.95rem; border:1px solid #facc15;">
+			<div style="font-size:1rem; opacity:0.8;">Revenue (week)</div>
+			<div style="font-size:1.8rem; font-weight:700;">₱{{ week_revenue }}</div>
+			<div style="font-size:1rem; color:#b91c1c;">Completed orders in the last 7 days</div>
+		</div>
+		<div style="background:#ffffff; border-radius:0.9rem; padding:0.85rem 0.95rem; border:1px solid #e5e7eb;">
+			<div style="font-size:1rem; opacity:0.9;">Top product</div>
+			<div style="font-size:1.5rem; font-weight:600;">
+				{% if top_product_name %}
+					{{ top_product_name }}
+				{% else %}
+					—
+				{% endif %}
+			</div>
+			<div style="font-size:1rem; opacity:0.85;">
+				{% if top_product_name %}
+					{{ top_product_quantity }} sold this week
+				{% else %}
+					No completed orders this week
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<h2 style="font-size:1.3rem; margin-bottom:0.55rem;">Recent orders</h2>
+	<div style="overflow-x:auto;">
+		<table style="width:100%; border-collapse:collapse; font-size:1.05rem;">
+			<thead>
+				<tr style="text-align:left; border-bottom:1px solid rgba(148,163,184,0.4);">
+					<th style="padding:0.4rem 0.25rem;">Order #</th>
+					<th style="padding:0.4rem 0.25rem;">Customer</th>
+					<th style="padding:0.4rem 0.25rem;">Items</th>
+					<th style="padding:0.4rem 0.25rem;">Total</th>
+					<th style="padding:0.4rem 0.25rem;">Status</th>
+					<th style="padding:0.4rem 0.25rem;">Placed</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for order in recent_orders %}
+					<tr>
+						<td style="padding:0.4rem 0.25rem;">#{{ order.id }}</td>
+						<td style="padding:0.4rem 0.25rem;">{{ order.customer.username }}</td>
+						<td style="padding:0.4rem 0.25rem;">
+							{% with first=order.items.all|first %}
+								{% if first %}
+									{{ first.product.name }}{% if order.items.count > 1 %} and {{ order.items.count|add:'-1' }} more{% endif %}
+								{% else %}
+									—
+								{% endif %}
+							{% endwith %}
+						</td>
+						<td style="padding:0.4rem 0.25rem;">₱{{ order.total_amount }}</td>
+						<td style="padding:0.4rem 0.25rem;">
+							{% if order.status == order.STATUS_PENDING %}
+								<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(250,204,21,0.15); color:#f59e0b; border:1px solid rgba(250,204,21,0.7);">Pending</span>
+							{% elif order.status == order.STATUS_PREPARING %}
+								<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(248,113,113,0.15); color:#b91c1c; border:1px solid rgba(248,113,113,0.7);">Preparing</span>
+							{% elif order.status == order.STATUS_READY_FOR_PICKUP %}
+								<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(59,130,246,0.16); color:#1d4ed8; border:1px solid rgba(59,130,246,0.8);">Ready for pick up</span>
+							{% elif order.status == order.STATUS_COMPLETED %}
+								<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(34,197,94,0.16); color:#16a34a; border:1px solid rgba(34,197,94,0.8);">Completed</span>
+							{% else %}
+								<span style="padding:0.1rem 0.45rem; border-radius:999px; background:#f3f4f6; color:#6b7280; border:1px solid #e5e7eb;">{{ order.get_status_display }}</span>
+							{% endif %}
+						</td>
+						<td style="padding:0.4rem 0.25rem; font-size:0.95rem; color:#6b7280;">{{ order.created_at|date:'Y-m-d H:i' }}</td>
+					</tr>
+				{% empty %}
+					<tr>
+						<td colspan="6" style="padding:0.4rem 0.25rem; font-size:0.9rem; color:#6b7280;">No orders yet.</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

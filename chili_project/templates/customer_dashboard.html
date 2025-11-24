@@ -1,0 +1,327 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}My chili garlic · Dashboard{% endblock %}
+
+{% block header_title %}My dashboard{% endblock %}
+
+{% block content %}
+	<div style="display:flex; justify-content:space-between; align-items:center; gap:0.9rem; margin-bottom:1rem; flex-wrap:wrap;">
+		<div style="display:flex; align-items:center; gap:0.65rem;">
+			<div style="width:36px; height:36px; border-radius:999px; background:#fee2e2; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:600; color:#b91c1c;">
+				{{ request.user.username|first|upper }}
+			</div>
+			<div>
+				<h1 style="font-size:1.35rem; margin-bottom:0.25rem;">Welcome back, {{ request.user.username }}!</h1>
+				<p style="font-size:1rem; color:#6b7280; margin:0;">Here is a quick snapshot of your chili garlic activity.</p>
+			</div>
+		</div>
+	</div>
+	
+	<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:0.9rem; margin-bottom:1.05rem;">
+		<div style="background:#fee2e2; border-radius:0.9rem; padding:0.8rem 0.9rem; border:1px solid #fecaca;">
+			<div style="font-size:1rem; opacity:0.9;">Total orders</div>
+			<div style="font-size:1.8rem; font-weight:700;">{{ total_orders }}</div>
+			<div style="font-size:1rem; opacity:0.85;">Thank you for the love!</div>
+		</div>
+		<div style="background:#ffffff; border-radius:0.9rem; padding:0.8rem 0.9rem; border:1px solid #facc15;">
+			<div style="font-size:1rem; opacity:0.9;">Pending orders</div>
+			<div style="font-size:1.6rem; font-weight:600; color:#b91c1c;">{{ pending_orders }}</div>
+			<div style="font-size:1rem; opacity:0.85;">We’ll notify you when they’re ready.</div>
+		</div>
+		<div style="background:#ffffff; border-radius:0.9rem; padding:0.8rem 0.9rem; border:1px solid #e5e7eb;">
+			<div style="font-size:1rem; opacity:0.9;">Order history</div>
+			<div style="font-size:1.05rem; margin-top:0.25rem;">See all your past orders.</div>
+			<a href="{% url 'customer_my_orders' %}" style="display:inline-block; margin-top:0.45rem; font-size:1rem; color:#b91c1c; text-decoration:none; border-bottom:1px dashed rgba(248,113,113,0.7);">View history</a>
+		</div>
+		<div style="background:#ffffff; border-radius:0.9rem; padding:0.8rem 0.9rem; border:1px solid #e5e7eb;">
+			<div style="font-size:1rem; opacity:0.9;">Total spent</div>
+			<div style="font-size:1.5rem; font-weight:700; margin-top:0.25rem;">₱{{ total_spent }}</div>
+			<div style="font-size:1rem; opacity:0.85;">Across all your orders</div>
+		</div>
+	</div>
+
+	<div style="background:#ffffff; border-radius:0.9rem; padding:1rem 1.1rem; border:1px solid #e5e7eb; box-shadow:0 10px 25px rgba(15,23,42,0.04);">
+			<h2 style="font-size:1.3rem; margin-bottom:0.5rem;">Order history</h2>
+			<div style="overflow-x:auto;">
+				<table style="width:100%; border-collapse:collapse; font-size:1.05rem;">
+					<thead>
+						<tr style="text-align:left; border-bottom:1px solid rgba(148,163,184,0.4);">
+							<th style="padding:0.4rem 0.25rem;">Order #</th>
+							<th style="padding:0.4rem 0.25rem;">Item</th>
+							<th style="padding:0.4rem 0.25rem;">Total</th>
+							<th style="padding:0.4rem 0.25rem;">Status</th>
+							<th style="padding:0.4rem 0.25rem;">Placed</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for order in order_history %}
+							<tr>
+								<td style="padding:0.4rem 0.25rem;">#{{ order.id }}</td>
+								<td style="padding:0.4rem 0.25rem;">
+									{% with first=order.items.all|first %}
+										{% if first %}
+											{{ first.product.name }}{% if order.items.count > 1 %} and {{ order.items.count|add:'-1' }} more{% endif %}
+										{% else %}
+											—
+										{% endif %}
+									{% endwith %}
+								</td>
+								<td style="padding:0.4rem 0.25rem;">₱{{ order.total_amount }}</td>
+								<td style="padding:0.4rem 0.25rem;">
+									{% if order.status == order.STATUS_PENDING %}
+										<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(250,204,21,0.15); color:#f59e0b; border:1px solid rgba(250,204,21,0.7);">Pending</span>
+									{% elif order.status == order.STATUS_PREPARING %}
+										<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(248,113,113,0.15); color:#b91c1c; border:1px solid rgba(248,113,113,0.7);">Preparing</span>
+									{% elif order.status == order.STATUS_COMPLETED %}
+										<span style="padding:0.1rem 0.45rem; border-radius:999px; background:rgba(34,197,94,0.16); color:#16a34a; border:1px solid rgba(34,197,94,0.8);">Completed</span>
+									{% else %}
+										<span style="padding:0.1rem 0.45rem; border-radius:999px; background:#f3f4f6; color:#6b7280; border:1px solid #e5e7eb;">{{ order.get_status_display }}</span>
+									{% endif %}
+								</td>
+								<td style="padding:0.4rem 0.25rem; font-size:0.9rem; color:#6b7280;">{{ order.created_at|date:'Y-m-d H:i' }}</td>
+							</tr>
+						{% empty %}
+							<tr>
+								<td colspan="5" style="padding:0.4rem 0.25rem; font-size:0.9rem; color:#6b7280;">No orders yet. Start by placing your first order.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+	</div>
+
+	<div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:1.05rem;">
+		<a href="{% url 'customer_order_now' %}" class="btn btn-primary" style="font-size:1rem; padding:0.5rem 1.1rem; text-decoration:none;">Browse menu</a>
+		<a href="{% url 'customer_my_orders' %}" class="btn btn-outline" style="font-size:1rem; padding:0.5rem 1.1rem; text-decoration:none;">Track order</a>
+		<a href="{% url 'customer_profile' %}" class="btn btn-outline" style="font-size:1rem; padding:0.5rem 1.1rem; text-decoration:none;">View / update profile</a>
+	</div>
+
+	<!-- Add to cart modal -->
+	<div id="addToCartModal" style="position:fixed; inset:0; background:rgba(15,23,42,0.45); display:none; align-items:center; justify-content:center; z-index:1000;">
+		<div class="card-surface" style="max-width:420px; width:100%; padding:1rem 1.1rem; border-radius:0.9rem;">
+			<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+				<h2 style="font-size:1.1rem; margin:0;">Add to cart</h2>
+				<button type="button" id="closeAddToCartModal" class="sidebar-toggle" style="font-size:1rem; padding:0.15rem 0.6rem;">✕</button>
+			</div>
+			<form id="addToCartForm" method="post" data-cart-add-template="{% url 'customer_cart_add' 0 %}">
+				{% csrf_token %}
+				<div style="display:flex; flex-direction:column; gap:0.6rem; font-size:0.95rem;">
+					<div>
+						<label for="addToCartProduct" style="display:block; margin-bottom:0.15rem;">Item</label>
+						<select id="addToCartProduct" name="product_id" required style="width:100%; padding:0.4rem 0.5rem; border-radius:0.6rem; border:1px solid #d1d5db;">
+							<option value="">Choose a product</option>
+							{% for product in products %}
+								<option value="{{ product.id }}" data-category="{{ product.category }}" data-name="{{ product.name }}">{{ product.name }} · ₱{{ product.price }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div>
+						<label for="addToCartQuantity" style="display:block; margin-bottom:0.15rem;">Quantity</label>
+						<input id="addToCartQuantity" type="number" name="quantity" min="1" value="1" style="width:100%; padding:0.4rem 0.5rem; border-radius:0.6rem; border:1px solid #d1d5db;" />
+					</div>
+					<div id="addToCartAddonsSection">
+						<label style="display:block; margin-bottom:0.15rem;">Add-ons</label>
+						<div id="addonsHelpText" style="font-size:0.85rem; color:#6b7280; margin-bottom:0.25rem;">Choose an item to see available add-ons.</div>
+						<div id="addonsMeal" style="display:none; padding:0.45rem 0.55rem; border-radius:0.6rem; border:1px solid #d1d5db; background:#f9fafb;">
+							<label for="mealExtraOil" style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; margin:0;">
+								<input type="checkbox" id="mealExtraOil" />
+								<span>Extra Chili Garlic oil (+₱15)</span>
+							</label>
+						</div>
+						<div id="addonsFries" style="display:none; padding:0.55rem 0.55rem; border-radius:0.6rem; border:1px solid #d1d5db; background:#f9fafb; margin-top:0.3rem;">
+							<div style="display:flex; flex-direction:column; gap:0.35rem;">
+								<div>
+									<label for="friesSize" style="display:block; margin-bottom:0.1rem;">Size</label>
+									<select id="friesSize" style="width:100%; padding:0.35rem 0.45rem; border-radius:0.6rem; border:1px solid #d1d5db;">
+										<option value="">Choose size</option>
+										<option value="Small (+₱40)">Small - ₱40</option>
+										<option value="Medium (+₱60)">Medium - ₱60</option>
+										<option value="Large (+₱80)">Large - ₱80</option>
+									</select>
+								</div>
+								<div>
+									<label for="friesFlavor" style="display:block; margin-bottom:0.1rem;">Flavor</label>
+									<select id="friesFlavor" style="width:100%; padding:0.35rem 0.45rem; border-radius:0.6rem; border:1px solid #d1d5db;">
+										<option value="">Choose flavor</option>
+										<option value="Cheese">Cheese</option>
+										<option value="BBQ">Bbq</option>
+										<option value="Sourcream">Sourcream</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div id="addonsNone" style="display:none; font-size:0.85rem; color:#6b7280; margin-top:0.25rem;">No add-ons available for this item.</div>
+						<input type="hidden" id="addToCartAddonsValue" name="addons" value="" />
+					</div>
+				</div>
+				<input type="hidden" name="next" value="{% url 'customer_dashboard' %}">
+				<div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.9rem;">
+					<button type="button" id="cancelAddToCart" class="btn btn-outline" style="font-size:0.9rem; padding:0.4rem 0.9rem;">Cancel</button>
+					<button type="submit" class="btn btn-primary" style="font-size:0.9rem; padding:0.4rem 0.9rem;">Add to cart</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		(function () {
+			var modal = document.getElementById('addToCartModal');
+			var openBtn = document.getElementById('openAddToCartModal');
+			if (!modal || !openBtn) return;
+			var closeBtn = document.getElementById('closeAddToCartModal');
+			var cancelBtn = document.getElementById('cancelAddToCart');
+			var form = document.getElementById('addToCartForm');
+			var productSelect = document.getElementById('addToCartProduct');
+			var template = form ? form.getAttribute('data-cart-add-template') : null;
+			var addonsSection = document.getElementById('addToCartAddonsSection');
+			var addonsHelp = document.getElementById('addonsHelpText');
+			var addonsMeal = document.getElementById('addonsMeal');
+			var addonsFries = document.getElementById('addonsFries');
+			var addonsNone = document.getElementById('addonsNone');
+			var addonsValue = document.getElementById('addToCartAddonsValue');
+			var mealExtraOil = document.getElementById('mealExtraOil');
+			var friesSize = document.getElementById('friesSize');
+			var friesFlavor = document.getElementById('friesFlavor');
+
+			function openModal() {
+				modal.style.display = 'flex';
+			}
+
+			function closeModal() {
+				modal.style.display = 'none';
+			}
+
+			function updateAction() {
+				if (!form || !template) return;
+				var id = productSelect.value;
+				if (!id) {
+					form.removeAttribute('action');
+					return;
+				}
+				form.action = template.replace(/0\/?$/, id + '/');
+			}
+
+			function clearAddonsUI() {
+				if (addonsHelp) addonsHelp.style.display = 'block';
+				if (addonsMeal) {
+					addonsMeal.style.display = 'none';
+					if (mealExtraOil) mealExtraOil.checked = false;
+				}
+				if (addonsFries) {
+					addonsFries.style.display = 'none';
+					if (friesSize) friesSize.value = '';
+					if (friesFlavor) friesFlavor.value = '';
+				}
+				if (addonsNone) addonsNone.style.display = 'none';
+				if (addonsValue) addonsValue.value = '';
+			}
+
+			function getSelectedProductMeta() {
+				if (!productSelect) return null;
+				var option = productSelect.options[productSelect.selectedIndex];
+				if (!option || !option.value) return null;
+				var category = option.getAttribute('data-category') || '';
+				var name = (option.getAttribute('data-name') || option.text || '').toLowerCase();
+				return { category: category, name: name };
+			}
+
+			function updateAddonsValue() {
+				if (!addonsValue) return;
+				var meta = getSelectedProductMeta();
+				if (!meta) {
+					addonsValue.value = '';
+					return;
+				}
+				var category = meta.category;
+				var name = meta.name || '';
+				var isFries = name.indexOf('fries') !== -1;
+				var isBurger = name.indexOf('burger') !== -1;
+				var parts = [];
+
+				if (isBurger) {
+					// burgers have no add-ons
+				} else if (category === 'meal') {
+					if (mealExtraOil && mealExtraOil.checked) {
+						parts.push('Extra Chili Garlic oil (+\u20b115)');
+					}
+				} else if (isFries) {
+					if (friesSize && friesSize.value) {
+						parts.push('Fries size: ' + friesSize.value);
+					}
+					if (friesFlavor && friesFlavor.value) {
+						parts.push('Flavor: ' + friesFlavor.value);
+					}
+				}
+
+				addonsValue.value = parts.join(' | ');
+			}
+
+			function updateAddonsUI() {
+				clearAddonsUI();
+				var meta = getSelectedProductMeta();
+				if (!meta) return;
+				if (addonsHelp) addonsHelp.style.display = 'none';
+				var category = meta.category;
+				var name = meta.name || '';
+				var isFries = name.indexOf('fries') !== -1;
+				var isBurger = name.indexOf('burger') !== -1;
+
+				if (isBurger) {
+					if (addonsNone) addonsNone.style.display = 'block';
+				} else if (category === 'meal') {
+					if (addonsMeal) addonsMeal.style.display = 'block';
+				} else if (isFries) {
+					if (addonsFries) addonsFries.style.display = 'block';
+				} else {
+					if (addonsNone) addonsNone.style.display = 'block';
+				}
+
+				updateAddonsValue();
+			}
+
+			openBtn.addEventListener('click', function (evt) {
+				evt.preventDefault();
+				openModal();
+			});
+
+			if (closeBtn) {
+				closeBtn.addEventListener('click', function (evt) {
+					evt.preventDefault();
+					closeModal();
+				});
+			}
+
+			if (cancelBtn) {
+				cancelBtn.addEventListener('click', function (evt) {
+					evt.preventDefault();
+					closeModal();
+				});
+			}
+
+			modal.addEventListener('click', function (evt) {
+				if (evt.target === modal) {
+					closeModal();
+				}
+			});
+
+			if (productSelect) {
+				productSelect.addEventListener('change', function () {
+					updateAction();
+					updateAddonsUI();
+				});
+				updateAction();
+				updateAddonsUI();
+			}
+
+			if (mealExtraOil) {
+				mealExtraOil.addEventListener('change', updateAddonsValue);
+			}
+			if (friesSize) {
+				friesSize.addEventListener('change', updateAddonsValue);
+			}
+			if (friesFlavor) {
+				friesFlavor.addEventListener('change', updateAddonsValue);
+			}
+		})();
+	</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}My profile · My Chili Garlic{% endblock %}
+
+{% block header_title %}My profile{% endblock %}
+
+{% block content %}
+	<section style="display:flex; flex-direction:column; gap:0.75rem; max-width:420px;">
+		<div>
+			<h1 style="font-size:1.1rem; margin-bottom:0.2rem;">My profile</h1>
+			<p style="font-size:0.85rem; color:#6b7280; margin:0;">Update your contact email used for order updates.</p>
+		</div>
+
+		<div class="card-surface" style="padding:0.9rem 1rem;">
+			<form method="post" style="font-size:0.85rem;">
+				{% csrf_token %}
+				{{ form.non_field_errors }}
+
+				<div style="margin-bottom:0.6rem;">
+					<label style="display:block; margin-bottom:0.15rem; color:#374151;">Username</label>
+					<div style="padding:0.4rem 0.6rem; border-radius:0.45rem; border:1px solid #e5e7eb; background:#f9fafb; font-size:0.85rem;">{{ request.user.username }}</div>
+				</div>
+
+				<div style="margin-bottom:0.6rem;">
+					<label for="id_email" style="display:block; margin-bottom:0.15rem; color:#374151;">Email</label>
+					{{ form.email }}
+					{{ form.email.errors }}
+				</div>
+
+				<button type="submit" class="btn btn-primary" style="margin-top:0.2rem;">Save changes</button>
+			</form>
+		</div>
+
+		<p style="font-size:0.78rem; color:#9ca3af;">For password changes, please use the admin tools or a future password change page.</p>
+	</section>
+{% endblock %}

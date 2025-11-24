@@ -1,0 +1,205 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}Order now · My Chili Garlic{% endblock %}
+
+{% block header_title %}Order now{% endblock %}
+
+{% block content %}
+	<section style="display:flex; flex-direction:column; gap:0.75rem;">
+		<div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+			<div>
+				<h1 style="font-size:1.1rem; margin-bottom:0.2rem;">Order now</h1>
+				<p style="font-size:0.85rem; color:#6b7280; margin:0;">Browse our latest chili garlic products curated by the kitchen.</p>
+			</div>
+			<div>
+				<a href="{% url 'customer_cart' %}" class="btn btn-outline" style="font-size:0.85rem; padding:0.3rem 0.8rem; display:inline-flex; align-items:center; gap:0.25rem; text-decoration:none;">
+					<span>🛒</span>
+					<span>View cart</span>
+				</a>
+			</div>
+		</div>
+
+		<div class="card-surface" style="padding:0.9rem 1rem;">
+			<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 320px)); justify-content:flex-start; gap:0.8rem;">
+				{% for product in products %}
+					<article style="border-radius:0.9rem; border:1px solid #e5e7eb; background:#ffffff; padding:0.6rem 0.7rem; display:flex; flex-direction:column; gap:0.45rem; align-items:stretch;">
+						<div style="width:100%;">
+							{% if product.image %}
+								<a href="{% url 'customer_product_detail' product.id %}" style="display:block;">
+									<img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:140px; border-radius:0.8rem; object-fit:contain; border:1px solid #e5e7eb; background:#ffffff;" />
+								</a>
+							{% else %}
+								<a href="{% url 'customer_product_detail' product.id %}" style="display:block;">
+									<div style="width:100%; height:140px; border-radius:0.8rem; border:1px dashed #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:#9ca3af;">No image</div>
+								</a>
+							{% endif %}
+						</div>
+						<div style="flex:1; min-width:0;">
+							<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.4rem;">
+								<div>
+									<div style="font-size:0.95rem; font-weight:600;">
+										<a href="{% url 'customer_product_detail' product.id %}" style="color:inherit; text-decoration:none;">{{ product.name }}</a>
+									</div>
+									<div style="font-size:0.75rem; color:#6b7280;">{{ product.get_category_display }}</div>
+								</div>
+								<div style="font-size:0.9rem; font-weight:600; color:#b91c1c;">₱{{ product.price }}</div>
+							</div>
+						</div>
+						<div style="display:flex; justify-content:space-between; align-items:flex-end; gap:0.4rem;">
+							<div>
+								{% if product.is_active %}
+									{% if product.stock > 0 %}
+										<span class="badge-pill-yellow">In stock: {{ product.stock }}</span>
+									{% else %}
+										<span class="badge-pill-red">Out of stock</span>
+									{% endif %}
+								{% else %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb;">Unavailable</span>
+								{% endif %}
+							</div>
+							{% if product.is_active and product.stock > 0 %}
+							<form method="post" action="{% url 'customer_cart_add' product.id %}" data-order-product-form data-category="{{ product.category }}" data-name="{{ product.name }}">
+								{% csrf_token %}
+								<div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem;">
+									<div class="order-addons" style="font-size:0.8rem; color:#6b7280; text-align:right;">
+										<div class="order-addons-meal" style="display:none;">
+											<label style="display:flex; align-items:center; gap:0.25rem; justify-content:flex-end; cursor:pointer;">
+												<input type="checkbox" class="order-meal-extra-oil" />
+												<span>Extra Chili Garlic oil (+₱15)</span>
+											</label>
+										</div>
+										<div class="order-addons-fries" style="display:none;">
+											<div style="display:flex; flex-direction:column; gap:0.2rem;">
+												<div>
+													<label style="display:block; margin-bottom:0.05rem;">Size</label>
+													<select class="order-fries-size" style="padding:0.25rem 0.4rem; border-radius:0.4rem; border:1px solid #d1d5db;">
+														<option value="">Choose size</option>
+														<option value="Small (+₱40)">Small - ₱40</option>
+														<option value="Medium (+₱60)">Medium - ₱60</option>
+														<option value="Large (+₱80)">Large - ₱80</option>
+													</select>
+												</div>
+												<div>
+													<label style="display:block; margin-bottom:0.05rem;">Flavor</label>
+													<select class="order-fries-flavor" style="padding:0.25rem 0.4rem; border-radius:0.4rem; border:1px solid #d1d5db;">
+														<option value="">Choose flavor</option>
+														<option value="Cheese">Cheese</option>
+														<option value="BBQ">Bbq</option>
+														<option value="Sourcream">Sourcream</option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="order-addons-none" style="display:none;">
+											<span>No add-ons available for this item.</span>
+										</div>
+										<input type="hidden" name="addons" class="order-addons-value" value="" />
+									</div>
+									<div>
+										<input type="number" name="quantity" min="1" value="1" style="width:70px; padding:0.2rem 0.35rem; font-size:0.8rem; border-radius:0.4rem; border:1px solid #d1d5db; margin-right:0.25rem;" />
+										<button type="submit" class="btn btn-primary" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+											Add to cart
+										</button>
+									</div>
+								</div>
+							</form>
+							{% endif %}
+						</div>
+					</article>
+				{% empty %}
+					<div style="font-size:0.85rem; color:#6b7280;">No products are available to order right now.</div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+	<script>
+		(function () {
+			var forms = document.querySelectorAll('[data-order-product-form]');
+			if (!forms || !forms.length) return;
+
+			for (var i = 0; i < forms.length; i++) {
+				(function (form) {
+					var category = (form.getAttribute('data-category') || '').toLowerCase();
+					var name = (form.getAttribute('data-name') || '').toLowerCase();
+					var addonsRoot = form.querySelector('.order-addons');
+					if (!addonsRoot) return;
+					var addonsMeal = addonsRoot.querySelector('.order-addons-meal');
+					var addonsFries = addonsRoot.querySelector('.order-addons-fries');
+					var addonsNone = addonsRoot.querySelector('.order-addons-none');
+					var addonsValue = addonsRoot.querySelector('.order-addons-value');
+					var mealExtraOil = addonsRoot.querySelector('.order-meal-extra-oil');
+					var friesSize = addonsRoot.querySelector('.order-fries-size');
+					var friesFlavor = addonsRoot.querySelector('.order-fries-flavor');
+
+					function clearAddonsUI() {
+						if (addonsMeal) {
+							addonsMeal.style.display = 'none';
+							if (mealExtraOil) mealExtraOil.checked = false;
+						}
+						if (addonsFries) {
+							addonsFries.style.display = 'none';
+							if (friesSize) friesSize.value = '';
+							if (friesFlavor) friesFlavor.value = '';
+						}
+						if (addonsNone) addonsNone.style.display = 'none';
+						if (addonsValue) addonsValue.value = '';
+					}
+
+					function updateAddonsValue() {
+						if (!addonsValue) return;
+						var isFries = name.indexOf('fries') !== -1;
+						var isBurger = name.indexOf('burger') !== -1;
+						var parts = [];
+
+						if (isBurger) {
+							// burgers have no add-ons
+						} else if (category === 'meal') {
+							if (mealExtraOil && mealExtraOil.checked) {
+								parts.push('Extra Chili Garlic oil (+\u20b115)');
+							}
+						} else if (isFries) {
+							if (friesSize && friesSize.value) {
+								parts.push('Fries size: ' + friesSize.value);
+							}
+							if (friesFlavor && friesFlavor.value) {
+								parts.push('Flavor: ' + friesFlavor.value);
+							}
+						}
+
+						addonsValue.value = parts.join(' | ');
+					}
+
+					function setupUI() {
+						clearAddonsUI();
+						var isFries = name.indexOf('fries') !== -1;
+						var isBurger = name.indexOf('burger') !== -1;
+
+						if (isBurger) {
+							if (addonsNone) addonsNone.style.display = 'block';
+						} else if (category === 'meal') {
+							if (addonsMeal) addonsMeal.style.display = 'block';
+						} else if (isFries) {
+							if (addonsFries) addonsFries.style.display = 'block';
+						} else {
+							if (addonsNone) addonsNone.style.display = 'block';
+						}
+
+						updateAddonsValue();
+					}
+
+					setupUI();
+
+					if (mealExtraOil) {
+						mealExtraOil.addEventListener('change', updateAddonsValue);
+					}
+					if (friesSize) {
+						friesSize.addEventListener('change', updateAddonsValue);
+					}
+					if (friesFlavor) {
+						friesFlavor.addEventListener('change', updateAddonsValue);
+					}
+				})(forms[i]);
+			}
+		})();
+	</script>
+{% endblock %}

@@ -1,0 +1,583 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>{% block title %}My chili garlic · Dashboard{% endblock %}</title>
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<style>
+		:root {
+			--red: #b91c1c;
+			--red-dark: #7f1d1d;
+			--yellow: #facc15;
+			--bg: #020617;
+			--white: #ffffff;
+		}
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			min-height: 100vh;
+			margin: 0;
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+			font-size: 1.05rem;
+			background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.08), #ffffff 55%, #fefce8 100%);
+			color: #111827;
+		}
+		.layout {
+			min-height: 100vh;
+			display: grid;
+			grid-template-columns: 220px minmax(0, 1fr);
+		}
+		.sidebar {
+			background: #ffffff;
+			border-right: 1px solid #e5e7eb;
+			color: #111827;
+			padding: 1.1rem 1rem;
+			display: flex;
+			flex-direction: column;
+			gap: 1.6rem;
+		}
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+		}
+		.brand-logo {
+			width: 32px;
+			height: 32px;
+			border-radius: 999px;
+			background: conic-gradient(from 200deg, var(--yellow), var(--red), var(--red-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+			font-size: 1.1rem;
+		}
+		.brand-text span:first-child {
+			font-size: 1rem;
+			font-weight: 600;
+		}
+		.brand-text span:last-child {
+			font-size: 0.85rem;
+			color: #fecaca;
+		}
+		.nav-list {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+			margin-top: 0.85rem;
+		}
+		.nav-list a {
+			text-decoration: none;
+			color: #374151;
+			font-size: 1.05rem;
+			padding: 0.4rem 0.7rem;
+			border-radius: 0.55rem;
+			border: 1px solid transparent;
+			transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+			display: block;
+		}
+		.nav-list a:hover {
+			background: #f9fafb;
+			border-color: #e5e7eb;
+			color: #111827;
+			transform: translateX(2px);
+		}
+		.nav-list a.active {
+			background: rgba(248, 113, 113, 0.15);
+			border-color: rgba(248, 113, 113, 0.8);
+			color: #b91c1c;
+			font-weight: 600;
+			box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.08);
+		}
+		.user-area {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			font-size: 0.9rem;
+		}
+		.user-pill {
+			padding: 0.3rem 0.6rem;
+			border-radius: 999px;
+			background: #fef9c3;
+			border: 1px solid rgba(250, 204, 21, 0.7);
+		}
+		.btn-logout {
+			border-radius: 999px;
+			border: none;
+			padding: 0.3rem 0.7rem;
+			font-size: 0.9rem;
+			background: #fee2e2;
+			color: #b91c1c;
+			cursor: pointer;
+			border: 1px solid #fecaca;
+		}
+		.sidebar-footer {
+			margin-top: auto;
+		}
+		.main {
+			padding: 1.2rem 1.3rem 1.4rem;
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+		}
+		.topbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 1rem;
+		}
+		.topbar-title {
+			font-size: 1.05rem;
+			font-weight: 600;
+		}
+		.content-card {
+			background: #ffffff;
+			border-radius: 1rem;
+			border: 1px solid #e5e7eb;
+			padding: 1rem 1rem 1.1rem;
+			box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+		}
+		.sidebar-toggle {
+			border-radius: 999px;
+			border: 1px solid rgba(148, 163, 184, 0.7);
+			background: rgba(15, 23, 42, 0.96);
+			color: #e5e7eb;
+			font-size: 0.8rem;
+			padding: 0.3rem 0.65rem;
+			cursor: pointer;
+		}
+		.sidebar-toggle:hover {
+			border-color: rgba(250, 204, 21, 0.9);
+		}
+		.footer {
+			padding: 0.75rem 1.1rem 1rem;
+			font-size: 0.85rem;
+			color: #9ca3af;
+			display: flex;
+			justify-content: space-between;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
+		.footer a {
+			color: #fecaca;
+			text-decoration: none;
+			border-bottom: 1px dashed rgba(252, 165, 165, 0.7);
+		}
+
+		body {
+			min-height: 100vh;
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+			font-size: var(--font-size-base);
+			line-height: 1.6;
+			background: linear-gradient(135deg, var(--red-bg) 0%, var(--white) 50%, var(--bg-light) 100%);
+			color: var(--text-main);
+		}
+
+		.layout {
+			display: grid;
+			grid-template-columns: 260px minmax(0, 1fr);
+			min-height: 100vh;
+			transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		.sidebar {
+			background: var(--white);
+			border-right: 1px solid var(--border-light);
+			color: var(--text-main);
+			padding: var(--space-lg) var(--space-md);
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-xl);
+			box-shadow: var(--shadow-md);
+			z-index: 50;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: var(--space-md);
+			padding: 0 var(--space-sm);
+		}
+
+		.brand-logo {
+			width: 44px;
+			height: 44px;
+			border-radius: var(--radius-full);
+			background: conic-gradient(from 200deg, var(--yellow), var(--red), var(--red-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 800;
+			font-size: 1.3rem;
+			color: var(--white);
+			box-shadow: var(--shadow-red);
+			flex-shrink: 0;
+		}
+		.brand-logo img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			border-radius: inherit;
+		}
+
+		.brand-text {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-xs);
+		}
+
+		.brand-text span:first-child {
+			font-size: 1.25rem;
+			font-weight: 700;
+			color: var(--red-dark);
+			line-height: 1.2;
+		}
+
+		.brand-text span:last-child {
+			font-size: var(--font-size-sm);
+			color: var(--text-subtle);
+			font-weight: 500;
+		}
+
+		.nav-list {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-xs);
+			margin-top: var(--space-lg);
+		}
+
+		.nav-list a {
+			text-decoration: none;
+			color: var(--text-main);
+			font-size: var(--font-size-lg);
+			padding: var(--space-md) var(--space-lg);
+			border-radius: var(--radius-lg);
+			border: 1px solid transparent;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+			font-weight: 500;
+		}
+
+		.nav-list a:hover {
+			background: rgba(248, 113, 113, 0.08);
+			border-color: rgba(248, 113, 113, 0.3);
+			color: var(--red-dark);
+			transform: translateX(4px);
+		}
+
+		.nav-list a.active {
+			background: rgba(248, 113, 113, 0.15);
+			border-color: var(--red);
+			color: var(--red-dark);
+			font-weight: 600;
+		}
+
+		.sidebar-footer {
+			margin-top: auto;
+			font-size: var(--font-size-sm);
+			color: var(--text-subtle);
+			padding: var(--space-md) var(--space-sm);
+			border-top: 1px solid var(--border-light);
+			text-align: center;
+		}
+
+		.main {
+			padding: var(--space-lg) var(--space-xl);
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-lg);
+			overflow-x: hidden;
+		}
+
+		.topbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: var(--space-md);
+			padding: var(--space-md) 0;
+		}
+
+		.topbar-title {
+			font-size: var(--font-size-2xl);
+			font-weight: 700;
+			color: var(--red-dark);
+			line-height: 1.2;
+		}
+
+		.user-area {
+			display: flex;
+			align-items: center;
+			gap: var(--space-md);
+		}
+
+		.user-pill {
+			font-size: var(--font-size-sm);
+			padding: var(--space-sm) var(--space-md);
+			border-radius: var(--radius-full);
+			background: var(--yellow-light);
+			border: 1px solid rgba(250, 204, 21, 0.8);
+			display: flex;
+			align-items: center;
+			gap: var(--space-sm);
+			box-shadow: var(--shadow-sm);
+		}
+
+		.btn-logout {
+			border-radius: var(--radius-full);
+			border: 1px solid var(--red);
+			padding: var(--space-sm) var(--space-lg);
+			font-size: var(--font-size-sm);
+			background: var(--red-light);
+			color: var(--red-dark);
+			cursor: pointer;
+			font-weight: 600;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: var(--shadow-sm);
+		}
+
+		.btn-logout:hover {
+			background: var(--red);
+			color: var(--white);
+			transform: translateY(-2px);
+			box-shadow: var(--shadow-md);
+		}
+
+		.content-card {
+			background: var(--white);
+			border-radius: var(--radius-xl);
+			border: 1px solid var(--border-light);
+			padding: var(--space-xl);
+			box-shadow: var(--shadow-lg);
+			transition: all 0.3s ease;
+			flex: 1;
+		}
+
+		.content-card:hover {
+			box-shadow: var(--shadow-xl);
+		}
+
+		.sidebar-toggle {
+			border-radius: var(--radius-full);
+			border: 1px solid var(--border-medium);
+			background: var(--white);
+			color: var(--text-main);
+			font-size: 1.1rem;
+			padding: var(--space-sm) var(--space-md);
+			cursor: pointer;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: var(--shadow-sm);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.sidebar-toggle:hover {
+			border-color: var(--red);
+			background: rgba(248, 113, 113, 0.05);
+			transform: scale(1.05);
+		}
+
+		/* Collapsed Sidebar (desktop only) */
+		@media (min-width: 769px) {
+			body.sidebar-collapsed .layout {
+				grid-template-columns: 80px minmax(0, 1fr);
+			}
+
+			body.sidebar-collapsed .brand-text,
+			body.sidebar-collapsed .nav-list,
+			body.sidebar-collapsed .sidebar-footer {
+				display: none;
+			}
+
+			body.sidebar-collapsed .sidebar {
+				align-items: center;
+				padding: var(--space-lg) var(--space-sm);
+			}
+
+			body.sidebar-collapsed .brand-logo {
+				margin-inline: auto;
+			}
+		}
+
+		@media (max-width: 1024px) {
+			.layout {
+				grid-template-columns: 220px minmax(0, 1fr);
+			}
+			.main {
+				padding: var(--space-md);
+			}
+			.content-card {
+				padding: var(--space-lg);
+			}
+		}
+
+		@media (max-width: 768px) {
+			.layout {
+				grid-template-columns: 1fr;
+			}
+			.sidebar {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 100%;
+				width: 85%;
+				max-width: 300px;
+				z-index: 1000;
+				box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+				transform: translateX(-100%);
+				transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+
+			body.sidebar-collapsed .sidebar {
+				display: flex;
+				transform: translateX(0);
+			}
+
+			body.sidebar-collapsed .layout::after {
+				content: '';
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 999;
+			}
+
+			.topbar {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: var(--space-md);
+			}
+
+			.user-area {
+				width: 100%;
+				justify-content: space-between;
+			}
+
+			.content-card {
+				padding: var(--space-md);
+				border-radius: var(--radius-lg);
+			}
+		}
+
+		@media (max-width: 480px) {
+			.main {
+				padding: var(--space-md) var(--space-sm);
+			}
+
+			.topbar-title {
+				font-size: var(--font-size-xl);
+			}
+
+			.user-pill {
+				font-size: var(--font-size-xs);
+				padding: var(--space-xs) var(--space-sm);
+			}
+
+			.btn-logout {
+				padding: var(--space-xs) var(--space-md);
+				font-size: var(--font-size-xs);
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="layout">
+		<aside class="sidebar">
+			<div>
+				<div class="brand">
+					<div class="brand-logo">
+						<img src="{% static 'imgs/Intoy_Logo.jpg' %}" alt="Intoy's Chili Garlic Kitchen logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+					</div>
+					<div class="brand-text">
+						<span>My Chili Garlic</span>
+						<span>Customer dashboard</span>
+					</div>
+				</div>
+				{% url 'customer_dashboard' as customer_dashboard_url %}
+				{% url 'customer_order_now' as customer_order_now_url %}
+				{% url 'customer_my_orders' as customer_my_orders_url %}
+				{% url 'customer_profile' as customer_profile_url %}
+				<ul class="nav-list">
+					<li><a href="{{ customer_dashboard_url }}" class="{% if request.path == customer_dashboard_url %}active{% endif %}">Dashboard</a></li>
+					<li><a href="{{ customer_order_now_url }}" class="{% if request.path == customer_order_now_url %}active{% endif %}">Order now</a></li>
+					<li><a href="{{ customer_my_orders_url }}" class="{% if request.path == customer_my_orders_url %}active{% endif %}">Order history</a></li>
+					<li><a href="{{ customer_profile_url }}" class="{% if request.path == customer_profile_url %}active{% endif %}">Account</a></li>
+				</ul>
+			</div>
+			<div class="sidebar-footer">
+				<span>Intoy's Chili Garlic Kitchen · Customer area</span>
+			</div>
+		</aside>
+		<main class="main">
+			<header class="topbar">
+				<div style="display:flex; align-items:center; gap:0.75rem;">
+					<button type="button" class="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+					<div class="topbar-title">{% block header_title %}My dashboard{% endblock %}</div>
+				</div>
+				<div class="user-area">
+					<div class="user-pill">{{ request.user.username }}</div>
+					<form method="post" action="{% url 'logout' %}">
+						{% csrf_token %}
+						<button type="submit" class="btn-logout">Log out</button>
+					</form>
+				</div>
+			</header>
+			<section class="content-card">
+				{% if messages %}
+					<div class="flash-messages">
+						{% for message in messages %}
+							<div class="flash-message {% if message.tags %}flash-message--{{ message.tags }}{% endif %}">{{ message }}</div>
+						{% endfor %}
+					</div>
+				{% endif %}
+				{% block content %}{% endblock %}
+			</section>
+			<footer class="footer">
+				<span>Intoy's Chili Garlic Kitchen · Thanks for supporting small-batch makers.</span>
+				<span><a href="{% url 'home' %}">Back to home</a></span>
+			</footer>
+		</main>
+	</div>
+	<script>
+		(function () {
+			var toggle = document.querySelector('.sidebar-toggle');
+			if (!toggle) return;
+			toggle.addEventListener('click', function () {
+				document.body.classList.toggle('sidebar-collapsed');
+			});
+
+			// Close sidebar when clicking outside on mobile
+			document.addEventListener('click', function(event) {
+				if (window.innerWidth <= 768 && document.body.classList.contains('sidebar-collapsed')) {
+					var sidebar = document.querySelector('.sidebar');
+					var toggleBtn = document.querySelector('.sidebar-toggle');
+
+					if (!sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
+						document.body.classList.remove('sidebar-collapsed');
+					}
+				}
+			});
+
+			// Handle window resize
+			window.addEventListener('resize', function() {
+				if (window.innerWidth > 768) {
+					document.body.classList.remove('sidebar-collapsed');
+				}
+			});
+		})();
+	</script>
+</body>
+</html>

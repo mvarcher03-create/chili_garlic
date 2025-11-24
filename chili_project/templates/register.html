@@ -1,0 +1,257 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Create account · Chili Garlic House</title>
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<style>
+		:root {
+			--red: #b91c1c;
+			--red-dark: #7f1d1d;
+			--yellow: #facc15;
+			--bg: #020617;
+			--white: #ffffff;
+		}
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: radial-gradient(circle at top, rgba(250, 204, 21, 0.18), #ffffff 55%, #fee2e2 100%);
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+			color: #111827;
+		}
+		.page {
+			width: 100%;
+			max-width: 420px;
+			padding: 1.5rem;
+		}
+		.card {
+			background: #ffffff;
+			border-radius: 1.25rem;
+			padding: 1.75rem 1.5rem 1.5rem;
+			border: 1px solid #e5e7eb;
+			box-shadow: 0 22px 50px rgba(15, 23, 42, 0.08);
+		}
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin-bottom: 1.4rem;
+		}
+		.brand-logo {
+			width: 40px;
+			height: 40px;
+			border-radius: 999px;
+			background: conic-gradient(from 200deg, var(--yellow), var(--red), var(--red-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 800;
+			font-size: 1.1rem;
+		}
+		.brand-logo img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			border-radius: inherit;
+		}
+		.brand-text span:first-child {
+			font-size: 0.9rem;
+			font-weight: 600;
+		}
+		.brand-text span:last-child {
+			font-size: 0.75rem;
+			color: #6b7280;
+		}
+		h1 {
+			font-size: 1.35rem;
+			margin-bottom: 0.3rem;
+		}
+		p.subtitle {
+			font-size: 0.9rem;
+			color: #4b5563;
+			margin-bottom: 1.1rem;
+		}
+		form {
+			display: flex;
+			flex-direction: column;
+			gap: 0.85rem;
+		}
+		label {
+			font-size: 0.8rem;
+			color: #374151;
+		}
+		input[type="text"],
+		input[type="email"],
+		input[type="password"] {
+			width: 100%;
+			border-radius: 0.8rem;
+			border: 1px solid #d1d5db;
+			background: #ffffff;
+			padding: 0.55rem 0.75rem;
+			color: #111827;
+			font-size: 0.9rem;
+			outline: none;
+			transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+		}
+		input[type="text"]:focus,
+		input[type="email"]:focus,
+		input[type="password"]:focus {
+			border-color: #f97316;
+			box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.7);
+			background: #ffffff;
+		}
+		.errorlist {
+			margin-top: 0.25rem;
+			margin-bottom: -0.2rem;
+			list-style: none;
+			color: #fecaca;
+			font-size: 0.75rem;
+		}
+		.btn-primary {
+			width: 100%;
+			margin-top: 0.6rem;
+			border-radius: 999px;
+			border: none;
+			padding: 0.6rem 0.75rem;
+			background: linear-gradient(135deg, var(--red), var(--red-dark));
+			color: var(--white);
+			font-weight: 600;
+			font-size: 0.95rem;
+			cursor: pointer;
+			box-shadow: 0 12px 30px rgba(185, 28, 28, 0.75);
+			transition: transform 0.15s ease, box-shadow 0.15s ease;
+		}
+		.btn-primary:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 16px 40px rgba(185, 28, 28, 1);
+		}
+		.password-row {
+			margin-top: 0.25rem;
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+		}
+		.password-toggle {
+			border-radius: 999px;
+			border: 1px solid rgba(148, 163, 184, 0.6);
+			background: rgba(15, 23, 42, 0.95);
+			color: #e5e7eb;
+			font-size: 0.75rem;
+			padding: 0.25rem 0.6rem;
+			cursor: pointer;
+		}
+		.password-toggle:hover {
+			border-color: rgba(250, 204, 21, 0.9);
+		}
+		.meta {
+			margin-top: 1rem;
+			font-size: 0.8rem;
+			color: #9ca3af;
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+		.meta a {
+			color: #fecaca;
+			text-decoration: none;
+			border-bottom: 1px dashed rgba(248, 113, 113, 0.7);
+		}
+		.badge-row {
+			margin-top: 0.75rem;
+			font-size: 0.75rem;
+			color: #6b7280;
+		}
+	</style>
+</head>
+<body>
+	<div class="page">
+		<div class="card">
+			<div class="brand">
+				<div class="brand-logo">
+					<img src="{% static 'imgs/Intoy_Logo.jpg' %}" alt="Intoy's Chili Garlic Kitchen logo" />
+				</div>
+				<div class="brand-text">
+					<span>Chili Garlic House</span>
+					<span>Create your customer account</span>
+				</div>
+			</div>
+			<h1>Sign up</h1>
+			<p class="subtitle">Track your chili garlic orders and save your details for faster checkout next time.</p>
+
+			<form method="post">
+				{% csrf_token %}
+
+				<div>
+					<label for="id_username">Username</label>
+					<input type="text" name="username" id="id_username" value="{{ form.username.value|default:'' }}" required />
+					{{ form.username.errors }}
+				</div>
+
+				<div>
+					<label for="id_email">Email</label>
+					<input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}" required />
+					{{ form.email.errors }}
+				</div>
+
+				<div>
+					<label for="id_password1">Password</label>
+					<div class="password-row">
+						<input type="password" name="password1" id="id_password1" required />
+						<button type="button" class="password-toggle" data-target="id_password1">Show</button>
+					</div>
+					{{ form.password1.errors }}
+				</div>
+
+				<div>
+					<label for="id_password2">Confirm password</label>
+					<div class="password-row">
+						<input type="password" name="password2" id="id_password2" required />
+						<button type="button" class="password-toggle" data-target="id_password2">Show</button>
+					</div>
+					{{ form.password2.errors }}
+				</div>
+
+				<button type="submit" class="btn-primary">Create account</button>
+			</form>
+
+			<div class="badge-row">
+				Password must be at least 8 characters and not too common.
+			</div>
+
+			<div class="meta">
+				<span>Already registered? <a href="{% url 'login' %}">Log in</a></span>
+				<span><a href="{% url 'home' %}">Back to home</a></span>
+			</div>
+		</div>
+	</div>
+	<script>
+		(function () {
+			var toggles = document.querySelectorAll('.password-toggle');
+			toggles.forEach(function (btn) {
+				btn.addEventListener('click', function () {
+					var targetId = btn.getAttribute('data-target');
+					var input = document.getElementById(targetId);
+					if (!input) return;
+					if (input.type === 'password') {
+						input.type = 'text';
+						btn.textContent = 'Hide';
+					} else {
+						input.type = 'password';
+						btn.textContent = 'Show';
+					}
+				});
+			});
+		})();
+	</script>
+</body>
+</html>

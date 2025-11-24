@@ -1,0 +1,110 @@
+{% extends 'customer_base.html' %}
+
+{% block title %}Order history · My Chili Garlic{% endblock %}
+
+{% block header_title %}Order history{% endblock %}
+
+{% block content %}
+	<section style="display:flex; flex-direction:column; gap:0.9rem;">
+		<div>
+			<h1 style="font-size:1.2rem; margin-bottom:0.25rem;">Order history</h1>
+			<p style="font-size:0.9rem; color:#6b7280; margin:0;">Track your current orders and review your past pickup history.</p>
+		</div>
+
+		<!-- Active orders -->
+		<div class="card-surface" style="padding:0.8rem 0.9rem; overflow-x:auto;">
+			<h2 style="font-size:1rem; margin-bottom:0.5rem;">Active orders</h2>
+			<table class="table-basic">
+				<thead>
+					<tr>
+						<th>Order #</th>
+						<th>Items</th>
+						<th>Status</th>
+						<th>Total</th>
+						<th>Placed</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in active_orders %}
+						<tr>
+							<td>#{{ order.id }}</td>
+							<td>
+								{% with first=order.items.all|first %}
+									{% if first %}
+										{{ first.product.name }}{% if order.items.count > 1 %} and {{ order.items.count|add:'-1' }} more{% endif %}
+									{% else %}
+										—
+									{% endif %}
+								{% endwith %}
+							</td>
+							<td>
+								{% if order.status == order.STATUS_PENDING %}
+									<span class="badge-pill-yellow">Pending</span>
+								{% elif order.status == order.STATUS_PREPARING %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:#fee2e2; border:1px solid #fecaca; color:#b91c1c;">Preparing</span>
+								{% elif order.status == order.STATUS_READY_FOR_PICKUP %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:rgba(59,130,246,0.16); border:1px solid rgba(59,130,246,0.8); color:#1d4ed8;">Ready for pick up</span>
+								{% else %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb;">{{ order.get_status_display }}</span>
+								{% endif %}
+							</td>
+							<td>₱{{ order.total_amount }}</td>
+							<td style="font-size:0.8rem; color:#6b7280;">{{ order.created_at|date:'Y-m-d H:i' }}</td>
+						</tr>
+					{% empty %}
+						<tr>
+							<td colspan="5" style="font-size:0.85rem; color:#6b7280; padding-top:0.4rem;">You have no active orders right now.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Past orders -->
+		<div class="card-surface" style="padding:0.8rem 0.9rem; overflow-x:auto;">
+			<h2 style="font-size:1rem; margin-bottom:0.5rem;">Past orders</h2>
+			<table class="table-basic">
+				<thead>
+					<tr>
+						<th>Order #</th>
+						<th>Items</th>
+						<th>Status</th>
+						<th>Total</th>
+						<th>Placed</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in past_orders %}
+						<tr>
+							<td>#{{ order.id }}</td>
+							<td>
+								{% with first=order.items.all|first %}
+									{% if first %}
+										{{ first.product.name }}{% if order.items.count > 1 %} and {{ order.items.count|add:'-1' }} more{% endif %}
+									{% else %}
+										—
+									{% endif %}
+								{% endwith %}
+							</td>
+							<td>
+								{% if order.status == order.STATUS_COMPLETED %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:rgba(34,197,94,0.16); border:1px solid rgba(34,197,94,0.8); color:#16a34a;">Completed</span>
+								{% elif order.status == order.STATUS_CANCELLED %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb; color:#6b7280;">Cancelled</span>
+								{% else %}
+									<span style="font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb;">{{ order.get_status_display }}</span>
+								{% endif %}
+							</td>
+							<td>₱{{ order.total_amount }}</td>
+							<td style="font-size:0.8rem; color:#6b7280;">{{ order.created_at|date:'Y-m-d H:i' }}</td>
+						</tr>
+					{% empty %}
+						<tr>
+							<td colspan="5" style="font-size:0.85rem; color:#6b7280; padding-top:0.4rem;">You don’t have any past orders yet.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}
