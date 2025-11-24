@@ -1,5 +1,6 @@
 from decimal import Decimal
 from datetime import timedelta
+import os
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
@@ -30,6 +31,23 @@ def login_view(request):
 		password = request.POST.get("password")
 		remember_me = request.POST.get("remember_me")
 		user = authenticate(request, username=username, password=password)
+		# On Render we might not have a way to run createsuperuser from the shell.
+		# Allow bootstrapping the first admin account using environment variables.
+		if user is None:
+			initial_admin_username = os.getenv("DJANGO_INITIAL_ADMIN_USERNAME")
+			initial_admin_password = os.getenv("DJANGO_INITIAL_ADMIN_PASSWORD")
+			if (
+				initial_admin_username
+				and initial_admin_password
+				and not User.objects.filter(is_superuser=True).exists()
+				and username == initial_admin_username
+				and password == initial_admin_password
+			):
+				user = User.objects.create_superuser(
+					username=initial_admin_username,
+					email="",
+					password=initial_admin_password,
+				)
 		if user is not None:
 			login(request, user)
 			if remember_me:
